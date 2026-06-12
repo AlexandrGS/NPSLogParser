@@ -5,7 +5,8 @@
 	$ResultPath = "",
 #Список IN*.LOG файлов созданных службой NPS, или одна папка где искать IN*.LOG файлы. Формат файлов DTS-XML.
 #Если указаны несколько файлов, то они разделяются любым из символов из переменной $DelimiterOfFilesList
-	$LogFiles = ".",
+	#$LogFiles = ".",
+    $LogFiles = "\\10.6.105.30\c$\Windows\System32\LogFiles\IN2606.log,\\10.6.105.33\c$\Windows\System32\LogFiles\IN2606.log,\\10.110.60.5\c$\Windows\System32\LogFiles\IN2606.log",
 #Что отправляется в выходной поток скрипта. Статистика по сессиям или по пользователям. По умолчанию по сессиям
 #Может принимать значения $StatTypePerSessions или $StatTypePerUsers.
     $StatType = "",
@@ -23,9 +24,13 @@
     $MinSec = 0,    #Секунды
     $MinMSec = 0,   #Миллисекунды 3 цифры
 #Верхний диапазон даты-времени
-    $MaxYear = 9999,#Год в формате YYYY, 4 цифры.
-    $MaxMonth = 12, #
-    $MaxDay = 31,   #
+#    $MaxYear = 9999,#Год в формате YYYY, 4 цифры.
+#    $MaxMonth = 12, #
+#    $MaxDay = 31,   #
+    $MaxYear = 2026,#Год в формате YYYY, 4 цифры.
+    $MaxMonth = 6, #
+    $MaxDay = 3,   #
+
     $MaxHour = 23,  #
     $MaxMin = 59,   #
     $MaxSec = 59,   #
@@ -690,6 +695,36 @@ function GetStatistic(){
                     $I.OutputOctetsFromBeginTime  += $VPNSession.OutputOctetsFromBeginTime
                     $I.OutputPackets              += $VPNSession.OutputPackets
                     $I.OutputPacketsFromBeginTime += $VPNSession.OutputPacketsFromBeginTime
+
+                    [bool]$boolNeedAddDevName = $True
+                    $UDNSplit = $I.UserDevNames.Split(",")
+                    foreach( $UDN in $UDNSplit ){
+                        if($UDN -eq $VPNSession.UserDevName){
+                            $boolNeedAddDevName = $False
+                            break
+                        }
+                    }
+                    if($boolNeedAddDevName){
+                        $I.CountUserDevNames += 1;
+                        $I.UserDevNames += ",";
+                        $I.UserDevNames += [string]$VPNSession.UserDevName;
+                    }
+
+                    [bool]$boolNeedAddASN = $True
+                    $ASNIII = $VPNSession.UserExternalIPGeolocation.Split(",")[5]
+                    foreach( $A in $I.ASN.Split(",") ) {
+                        if($A -eq $ASNIII){
+                            $boolNeedAddASN = $False
+                            break
+                        }
+                    
+                    }
+                    if($boolNeedAddASN){
+                        $I.CountASN    += 1;
+                        $I.ASN += ","
+                        $I.ASN += [string]$ASNIII
+                    }
+
                 }else{
                     $I.ConnectionsBad++
                 }
@@ -718,6 +753,10 @@ function GetStatistic(){
                 OutputOctetsFromBeginTime  = [uint64]0;
                 OutputPackets              = [uint64]0;
                 OutputPacketsFromBeginTime = [uint64]0;
+                CountUserDevNames = [uint64]0;
+                UserDevNames      = [string]"";
+                CountASN          = [uint64]0;
+                ASN               = [string]"";
             })
             if($VPNSession.isAccounting -eq $True){
                 $StatForUser.ConnectionsOk++
@@ -735,6 +774,10 @@ function GetStatistic(){
                 $StatForUser.OutputOctetsFromBeginTime  = [uint64]$VPNSession.OutputOctetsFromBeginTime;
                 $StatForUser.OutputPackets              = [uint64]$VPNSession.OutputPackets;
                 $StatForUser.OutputPacketsFromBeginTime = [uint64]$VPNSession.OutputPacketsFromBeginTime;
+                $StatForUser.CountUserDevNames += 1;
+                $StatForUser.UserDevNames = [string]$VPNSession.UserDevName;
+                $StatForUser.CountASN          += 1;
+                $StatForUser.ASN          = [string]$VPNSession.UserExternalIPGeolocation.Split(",")[5];
             }else{
                 $StatForUser.ConnectionsBad++
             }
