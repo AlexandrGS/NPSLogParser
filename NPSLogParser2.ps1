@@ -5,8 +5,7 @@
 	$ResultPath = "",
 #Список IN*.LOG файлов созданных службой NPS, или одна папка где искать IN*.LOG файлы. Формат файлов DTS-XML.
 #Если указаны несколько файлов, то они разделяются любым из символов из переменной $DelimiterOfFilesList
-	#$LogFiles = ".",
-    $LogFiles = "\\10.6.105.30\c$\Windows\System32\LogFiles\IN2606.log,\\10.6.105.33\c$\Windows\System32\LogFiles\IN2606.log,\\10.110.60.5\c$\Windows\System32\LogFiles\IN2606.log",
+	$LogFiles = ".",
 #Что отправляется в выходной поток скрипта. Статистика по сессиям или по пользователям. По умолчанию по сессиям
 #Может принимать значения $StatTypePerSessions или $StatTypePerUsers.
     $StatType = "",
