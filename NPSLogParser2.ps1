@@ -23,13 +23,9 @@
     $MinSec = 0,    #Секунды
     $MinMSec = 0,   #Миллисекунды 3 цифры
 #Верхний диапазон даты-времени
-#    $MaxYear = 9999,#Год в формате YYYY, 4 цифры.
-#    $MaxMonth = 12, #
-#    $MaxDay = 31,   #
-    $MaxYear = 2026,#Год в формате YYYY, 4 цифры.
-    $MaxMonth = 6, #
-    $MaxDay = 3,   #
-
+    $MaxYear = 9999,#Год в формате YYYY, 4 цифры.
+    $MaxMonth = 12, #
+    $MaxDay = 31,   #
     $MaxHour = 23,  #
     $MaxMin = 59,   #
     $MaxSec = 59,   #
